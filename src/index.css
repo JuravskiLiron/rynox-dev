@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom cursor */
+body {
+  cursor: none;
+}
+.cursor {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #a855f7;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out, background-color 0.2s;
+  z-index: 9999;
+}
+@keyframes blob1 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(30px, -50px) scale(1.2); }
+}
+@keyframes blob2 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-40px, 30px) scale(1.1); }
+}
+.animate-[blob1_15s_1s_infinite] { animation: blob1 15s ease-in-out infinite; }
+.animate-[blob2_20s_0s_infinite] { animation: blob2 20s ease-in-out infinite; }
