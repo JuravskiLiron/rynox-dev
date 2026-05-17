@@ -6,8 +6,8 @@ import { useIsMobile } from "../hooks/useIsMobile";
 const copy = {
   he: {
     tag: "עיצוב · פיתוח · תוצאות",
-    prefix: "אנחנו בונים אתרים ש",
-    words: ["מוכרים.", "ממירים.", "גדלים."],
+   prefix: "אנחנו בונים אתרים",
+    words: ["מוכרים.", "מצליחים.", "מענינים."],
     cta1: "עבודות נבחרות",
     cta2: "לשוחח על פרויקט",
   },
@@ -31,7 +31,6 @@ function PhoneScreen({ scale: s }: { scale: number }) {
     <div style={{
       width: 260 * s, background: "#111010",
       borderRadius: 48 * s, border: `${7 * s}px solid #1e1c1b`,
-      boxShadow: `0 ${60 * s}px ${120 * s}px rgba(0,0,0,0.35), 0 0 0 ${s}px rgba(255,255,255,0.06)`,
       overflow: "hidden", position: "relative", flexShrink: 0,
     }}>
       <div style={{ position: "absolute", top: 12 * s, left: "50%", transform: "translateX(-50%)", width: 86 * s, height: 22 * s, background: "#111010", borderRadius: 11 * s, zIndex: 10 }} />
@@ -46,7 +45,7 @@ function PhoneScreen({ scale: s }: { scale: number }) {
 
         <div style={{ margin: `0 ${10 * s}px ${10 * s}px`, padding: `${14 * s}px ${16 * s}px`, background: "linear-gradient(135deg,#1a1060,#0d0b20)", borderRadius: 16 * s, position: "relative", overflow: "hidden", flexShrink: 0, direction: "ltr" }}>
           <div style={{ position: "absolute", top: -20 * s, right: -20 * s, width: 100 * s, height: 100 * s, background: "rgba(99,102,241,0.2)", filter: `blur(${30 * s}px)`, borderRadius: "50%" }} />
-          <p style={{ color: "rgba(199,196,255,0.6)", fontSize: 7 * s, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 * s }}>ACTIVE PROJECTS</p>
+          <p style={{ color: "rgba(255, 255, 255, 1)", fontSize: 7 * s, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 6 * s }}>ACTIVE PROJECTS</p>
           <div style={{ display: "flex", alignItems: "flex-end", gap: 6 * s }}>
             <span style={{ color: "#ece8e2", fontSize: 32 * s, fontWeight: 800, lineHeight: 1, letterSpacing: "-0.03em" }}>35</span>
             <span style={{ color: "rgba(199,196,255,0.5)", fontSize: 10 * s, marginBottom: 3 * s }}>projects</span>
@@ -61,7 +60,7 @@ function PhoneScreen({ scale: s }: { scale: number }) {
           </div>
         </div>
 
-        <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 7 * s, letterSpacing: "0.2em", textTransform: "uppercase", padding: `0 ${14 * s}px ${8 * s}px`, flexShrink: 0, direction: "ltr" }}>Recent work</p>
+        <p style={{ color: "rgba(255, 255, 255, 0.85)", fontSize: 7 * s, letterSpacing: "0.2em", textTransform: "uppercase", padding: `0 ${14 * s}px ${8 * s}px`, flexShrink: 0, direction: "ltr" }}>Recent work</p>
 
         <div style={{ padding: `0 ${10 * s}px`, flex: 1, display: "flex", flexDirection: "column", gap: 6 * s }}>
           {PROJECTS.map(({ name, type, color, metric, live }) => (
