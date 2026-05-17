@@ -1,67 +1,123 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
-interface Feature {
-  id: string;
-  name: string;
-  price: number;
-}
-
-const features: Feature[] = [
-  { id: "homepage", name: "דף בית + עיצוב בסיסי", price: 500 },
-  { id: "seo-basic", name: "SEO בסיסי", price: 300 },
-  { id: "seo-adv", name: "SEO מתקדם", price: 700 },
-  { id: "shop", name: "חנות אונליין", price: 1500 },
-  { id: "ui-ux", name: "אנימציות UI/UX מתקדמות", price: 1000 },
-  { id: "custom-integration", name: "אינטגרציות מותאמות אישית", price: 1200 },
-  { id: "support-daily", name: "תמיכה יומית", price: 400 },
-  { id: "support-24", name: "תמיכה 24/7", price: 700 },
-];
+const services = {
+  he: [
+    { icon: "⚙️", name: "פאנל אדמין", desc: "ניהול תוכן מלא לאתר קיים", price: 300 },
+    { icon: "🚀", name: "דף נחיתה", desc: "עמוד ממיר עם אנימציות", price: 800 },
+    { icon: "🎨", name: "לוגו + ברנד", desc: "זהות ויזואלית מלאה", price: 450 },
+    { icon: "🛒", name: "חנות אינטרנטית", desc: "קטלוג + עגלת קניות", price: 1200 },
+    { icon: "📧", name: "אוטומציית מיילים", desc: "תהליכי אוטומציה חכמים", price: 400 },
+    { icon: "📊", name: "אופטימיזציית SEO", desc: "שיפור דירוג בגוגל", price: 500 },
+  ],
+  en: [
+    { icon: "⚙️", name: "Admin Panel", desc: "Full CMS for existing site", price: 300 },
+    { icon: "🚀", name: "Landing Page", desc: "Converting page with animations", price: 800 },
+    { icon: "🎨", name: "Logo + Brand", desc: "Complete visual identity", price: 450 },
+    { icon: "🛒", name: "Online Store", desc: "Catalog + shopping cart", price: 1200 },
+    { icon: "📧", name: "Email Automation", desc: "Smart automation workflows", price: 400 },
+    { icon: "📊", name: "SEO Optimization", desc: "Google ranking improvement", price: 500 },
+  ],
+};
 
 export default function CustomPackage() {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  const toggle = (id: string) => {
-    setSelected((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
-      return newSet;
-    });
-  };
-
-  const totalPrice = Array.from(selected).reduce((sum, id) => {
-    const feature = features.find((f) => f.id === id);
-    return feature ? sum + feature.price : sum;
-  }, 0);
+  const { lang } = useTheme();
+  const isMobile = useIsMobile();
+  const items = services[lang];
 
   return (
-    <section className="py-32 px-6 bg-black text-white">
-      <h2 className="text-4xl font-bold mb-12 text-center">בנה את החבילה שלך</h2>
+    <section style={{
+      padding: isMobile ? "80px 20px" : "120px 48px",
+      borderTop: "1px solid var(--border)",
+    }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
-        {features.map((f) => (
-          <motion.div
-            key={f.id}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => toggle(f.id)}
-            className={`p-6 rounded-3xl border transition cursor-pointer backdrop-blur-md ${
-              selected.has(f.id)
-                ? "bg-purple-600/40 border-purple-500 shadow-lg"
-                : "bg-zinc-900/70 border-zinc-800"
-            }`}
-          >
-            <h3 className="font-semibold text-lg mb-2">{f.name}</h3>
-            <p className="text-purple-500 font-bold">₪{f.price}</p>
-          </motion.div>
-        ))}
-      </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ marginBottom: isMobile ? 48 : 64 }}
+        >
+          <p style={{ color: "var(--fg-3)", fontSize: 11, letterSpacing: "0.28em", textTransform: "uppercase", marginBottom: 16 }}>
+            {lang === "he" ? "הזמנות ספציפיות" : "À La Carte"}
+          </p>
+          <h2 style={{
+            color: "var(--fg)",
+            fontSize: isMobile ? "clamp(28px, 8vw, 40px)" : "clamp(36px, 3.5vw, 52px)",
+            fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.1, maxWidth: 520,
+          }}>
+            {lang === "he"
+              ? <span>צריך רק משהו ספציפי?<br /><span style={{ color: "var(--fg-2)", fontWeight: 700 }}>אפשר להזמין בדיוק מה שצריך.</span></span>
+              : <span>Need just one thing?<br /><span style={{ color: "var(--fg-2)", fontWeight: 700 }}>Order exactly what you need.</span></span>
+            }
+          </h2>
+        </motion.div>
 
-      <div className="max-w-md mx-auto bg-zinc-900/70 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-zinc-800 text-center">
-        <p className="text-gray-300 mb-4">סה"כ מחיר: <span className="text-purple-500 font-bold text-2xl">₪{totalPrice}</span></p>
-        <button className="py-4 px-8 bg-purple-600 hover:bg-purple-500 rounded-2xl font-semibold text-white transition">
-          שלח בקשה עם החבילה שלך
-        </button>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)",
+          gap: isMobile ? 12 : 16,
+        }}>
+          {items.map((item, i) => (
+            <motion.a
+              key={i}
+              href="#contact"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.07 }}
+              style={{
+                display: "flex", flexDirection: "column",
+                padding: isMobile ? "20px 16px" : "28px 24px",
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: isMobile ? 16 : 20,
+                textDecoration: "none", cursor: "pointer",
+              }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.18 } }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--fg-3)";
+                (e.currentTarget as HTMLElement).style.background = "var(--surface-hover)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                (e.currentTarget as HTMLElement).style.background = "var(--surface)";
+              }}
+            >
+              <span style={{ fontSize: isMobile ? 22 : 28, marginBottom: isMobile ? 10 : 14, display: "block" }}>
+                {item.icon}
+              </span>
+              <p style={{ color: "var(--fg)", fontSize: isMobile ? 13 : 15, fontWeight: 700, marginBottom: 6, lineHeight: 1.3 }}>
+                {item.name}
+              </p>
+              <p style={{ color: "var(--fg-3)", fontSize: isMobile ? 11 : 12, lineHeight: 1.5, flex: 1, marginBottom: isMobile ? 16 : 20 }}>
+                {item.desc}
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ color: "var(--fg)", fontSize: isMobile ? 20 : 24, fontWeight: 800, letterSpacing: "-0.02em" }}>
+                  ₪{item.price.toLocaleString()}
+                </span>
+                <span style={{ color: "var(--fg-3)", fontSize: isMobile ? 11 : 12, fontWeight: 500 }}>
+                  {lang === "he" ? "הזמן ←" : "Order →"}
+                </span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{ color: "var(--fg-3)", fontSize: 13, textAlign: "center", marginTop: 40, lineHeight: 1.6 }}
+        >
+          {lang === "he"
+            ? "כל השירותים כוללים עיצוב + פיתוח + העלאה לאוויר · מחירים ללא מע\"מ"
+            : "All services include design + development + deployment · Prices excl. VAT"}
+        </motion.p>
       </div>
     </section>
   );

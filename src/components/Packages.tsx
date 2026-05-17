@@ -1,164 +1,101 @@
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useTheme } from "../context/ThemeContext";
 
-//
-// ✅ Плавная прогрузка цены
-//
-function useAnimatedPrice(target: number, start: boolean) {
-  const [value, setValue] = useState(0);
+function PriceCounter({ to }: { to: number }) {
+  const [val, setVal] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!start) return;
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setStarted(true); obs.disconnect(); }
+    }, { threshold: 0.1 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
-    let startTime: number | null = null;
-    const duration = 1400;
-
-    const animate = (time: number) => {
-      if (!startTime) startTime = time;
-      const progress = time - startTime;
-
-      if (progress < duration) {
-        const percent = progress / duration;
-        setValue(Math.floor(target * percent));
-        requestAnimationFrame(animate);
-      } else {
-        setValue(target);
-      }
+  useEffect(() => {
+    if (!started) return;
+    const dur = 1200;
+    const t0 = performance.now();
+    const raf = (now: number) => {
+      const p = Math.min((now - t0) / dur, 1);
+      setVal(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(raf);
     };
+    requestAnimationFrame(raf);
+  }, [started, to]);
 
-    requestAnimationFrame(animate);
-  }, [target, start]);
-
-  return value;
+  return <span ref={ref}>₪{val.toLocaleString()}</span>;
 }
 
-//
-// ✅ Типы
-//
-interface PackageCardProps {
-  title: string;
-  price: number;
-  features: string[];
-  popular?: boolean;
-  startAnimation: boolean;
-}
+const c = {
+  he: {
+    tag: "מחירים", title: "בחר חבילה", popular: "הכי פופולרי", cta: "הזמן עכשיו",
+    plans: [
+      { name: "סטארט", price: 1500, desc: "לעסקים שרוצים נוכחות דיגיטלית מקצועית", features: ["דף בית מעוצב", "SEO בסיסי", "מותאם למובייל", "תמיכה שבועית"] },
+      { name: "עסקי", price: 3500, desc: "לעסקים שרוצים לגדול ולמכור יותר", features: ["כולל סטארט", "חנות אונליין", "SEO מתקדם", "אנליטיקס", "תמיכה יומית"], popular: true },
+      { name: "פרימיום", price: 6500, desc: "פתרון מקיף לעסקים ברמה הגבוהה ביותר", features: ["כולל עסקי", "אנימציות מתקדמות", "אינטגרציות CRM", "A/B Testing", "תמיכה 24/7"] },
+    ],
+  },
+  en: {
+    tag: "Pricing", title: "Choose a Plan", popular: "Most Popular", cta: "Get Started",
+    plans: [
+      { name: "Starter", price: 1500, desc: "For businesses that want a professional digital presence", features: ["Designed homepage", "Basic SEO", "Mobile optimized", "Weekly support"] },
+      { name: "Business", price: 3500, desc: "For businesses that want to grow and sell more", features: ["Includes Starter", "Online store", "Advanced SEO", "Analytics", "Daily support"], popular: true },
+      { name: "Premium", price: 6500, desc: "A complete solution for top-tier businesses", features: ["Includes Business", "Advanced animations", "CRM integrations", "A/B Testing", "24/7 support"] },
+    ],
+  },
+};
 
-//
-// ✅ Карточка БЕЗ появления
-//
-function PackageCard({
-  title,
-  price,
-  features,
-  popular,
-  startAnimation,
-}: PackageCardProps) {
-  const animatedPrice = useAnimatedPrice(price, startAnimation);
-
-  return (
-    <div
-      className={`relative p-8 rounded-3xl border backdrop-blur-md flex flex-col justify-between transition-all duration-300
-        ${
-          popular
-            ? "bg-purple-900/40 border-purple-500 shadow-xl"
-            : "bg-zinc-900/80 border-zinc-800"
-        }`}
-    >
-      {popular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-purple-600 text-sm rounded-full font-semibold">
-          הכי פופולרי
-        </div>
-      )}
-
-      <h3 className="text-2xl font-bold mb-4 text-white">{title}</h3>
-
-      <motion.p
-        animate={
-          animatedPrice === price
-            ? { scale: [1, 1.06, 1] }
-            : { scale: 1 }
-        }
-        transition={{ duration: 0.4 }}
-        className="text-4xl md:text-5xl font-extrabold text-purple-400 mb-6"
-      >
-        ₪{animatedPrice}
-      </motion.p>
-
-      <ul className="text-gray-300 mb-6 space-y-2 text-right">
-        {features.map((f, i) => (
-          <li key={i} className="flex items-start gap-2 justify-end">
-            {f}
-            <span className="text-purple-400 font-bold">✓</span>
-          </li>
-        ))}
-      </ul>
-
-      <button
-        className={`w-full py-3 rounded-xl font-semibold transition ${
-          popular
-            ? "bg-purple-600 hover:bg-purple-500"
-            : "bg-zinc-800 hover:bg-zinc-700"
-        }`}
-      >
-        הזמן עכשיו
-      </button>
-    </div>
-  );
-}
-
-//
-// ✅ Главный компонент
-//
 export default function Packages() {
-  const [startAnimation, setStartAnimation] = useState(false);
-
-  const packages = [
-    {
-      title: "סטארט",
-      price: 1500,
-      features: ["דף בית", "SEO בסיסי", "תמיכה שבועית"],
-    },
-    {
-      title: "עסקי",
-      price: 3500,
-      popular: true,
-      features: [
-        "כולל סטארט",
-        "חנות אונליין",
-        "SEO מתקדם",
-        "תמיכה יומית",
-      ],
-    },
-    {
-      title: "פרימיום",
-      price: 6500,
-      features: [
-        "כולל עסקי",
-        "אינטגרציות מותאמות אישית",
-        "אנימציות מתקדמות",
-        "תמיכה 24/7",
-      ],
-    },
-  ];
+  const { lang } = useTheme();
+  const t = c[lang];
 
   return (
-    <section id="packages" className="py-32 px-6 text-center bg-black">
-      <h2 className="text-4xl font-bold mb-16 text-white">חבילות</h2>
+    <section id="pricing" style={{ padding: "120px 24px", borderTop: "1px solid var(--border)" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ marginBottom: 56 }}>
+          <p style={{ color: "var(--fg-3)", fontSize: 11, letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: 16 }}>{t.tag}</p>
+          <h2 style={{ color: "var(--fg)", fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-0.02em" }}>{t.title}</h2>
+        </motion.div>
 
-      {/* только для отслеживания viewport */}
-      <motion.div
-        onViewportEnter={() => setStartAnimation(true)}
-        viewport={{ once: true }}
-        className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto"
-      >
-        {packages.map((pkg) => (
-          <PackageCard
-            key={pkg.title}
-            {...pkg}
-            startAnimation={startAnimation}
-          />
-        ))}
-      </motion.div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+          {t.plans.map((plan, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.6, delay: i * 0.1 }}
+              style={{ border: "1px solid var(--border)", borderRadius: 16, padding: "32px", display: "flex", flexDirection: "column", position: "relative", background: (plan as any).popular ? "var(--surface)" : "transparent" }}>
+              {(plan as any).popular && (
+                <div style={{ position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)", background: "var(--fg)", color: "var(--bg)", fontSize: 11, fontWeight: 600, padding: "4px 14px", borderRadius: "0 0 8px 8px", letterSpacing: "0.05em" }}>
+                  {t.popular}
+                </div>
+              )}
+              <p style={{ color: "var(--fg-3)", fontSize: 12, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 8 }}>{plan.name}</p>
+              <p style={{ color: "var(--fg)", fontSize: 36, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 8 }}>
+                <PriceCounter to={plan.price} />
+              </p>
+              <p style={{ color: "var(--fg-2)", fontSize: 14, lineHeight: 1.5, marginBottom: 28, borderBottom: "1px solid var(--border)", paddingBottom: 24 }}>{plan.desc}</p>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+                {plan.features.map((f, j) => (
+                  <li key={j} style={{ display: "flex", alignItems: "center", gap: 10, color: "var(--fg-2)", fontSize: 14 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-3)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <button style={{ width: "100%", padding: "12px", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", background: (plan as any).popular ? "var(--fg)" : "transparent", color: (plan as any).popular ? "var(--bg)" : "var(--fg)", border: "1px solid var(--border)" }}
+                onMouseEnter={e => { if (!(plan as any).popular) e.currentTarget.style.background = "var(--surface)"; }}
+                onMouseLeave={e => { if (!(plan as any).popular) e.currentTarget.style.background = "transparent"; }}>
+                {t.cta}
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
