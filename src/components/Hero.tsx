@@ -143,14 +143,14 @@ const sub = lang === "he" ? (
       <section>
         {/* Mobile: centered text + phone below */}
         <motion.div
-          initial={{ opacity: 0, y: 48 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.3 }}
+         //initial={{ opacity: 0, y: 48 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.3 }}
           style={{ marginTop: 52, background: "var(--bg-2)", display: "flex", justifyContent: "center", alignItems: "flex-end", padding: "15px 0 15px", overflow: "hidden", position: "relative" }}
         >
           <div style={{ position: "absolute", top: "15%", left: "50%", transform: "translateX(-50%)", width: 240, height: 240, background: "#6366f1", opacity: 0.06, filter: "blur(80px)", borderRadius: "50%", pointerEvents: "none" }} />
           <PhoneScreen scale={0.74} />
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75 }}
+          //initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.75 }}
           style={{ textAlign: "center", padding: "26px 24px 12px", maxWidth: 600, margin: "0 auto" }}
         >
           <div style={{ fontSize: "clamp(40px, 11vw, 56px)", marginBottom: 20 }}>

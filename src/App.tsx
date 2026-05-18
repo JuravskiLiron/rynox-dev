@@ -19,8 +19,8 @@ function App() {
       <Hero />
       <Ticker />
       <Stats />
-      <BeforeAfter />
-      <Portfolio />
+      {/* <BeforeAfter /> */}
+      {/* <Portfolio /> */}
       <Process />
       <Packages />
       <CustomPackage /> {/* ← добавить */}
